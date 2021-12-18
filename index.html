@@ -12,16 +12,16 @@
         <div class="small-6 columns">
             <h1 class="text-center">SEN</h1>
             <div class="healthbar">
-                <div class="healthbar text-center" style="background-color: green; margin: 0; color: white;" :style="{width: playerHeal +'%'}">
-                    {{ playerHeal }}%
+                <div class="healthbar text-center" style="background-color: green; margin: 0; color: white;" :style="playerProgress">
+                    {{ playerHealth }}%
                 </div>
             </div>
         </div>
         <div class="small-6 columns">
             <h1 class="text-center">CANAVAR</h1>
             <div class="healthbar">
-                <div class="healthbar text-center" style="background-color: green; margin: 0; color: white;" :style="{width: monsterHeal +'%'}">
-                    {{ monsterHeal }}%
+                <div class="healthbar text-center" style="background-color: green; margin: 0; color: white;" :style="monsterProgress">
+                    {{ monsterHealth }}%
                 </div>
             </div>
         </div>
@@ -42,15 +42,10 @@
     <section v-if="!attacks.length == 0" class="row log">
         <div class="small-12 columns">
             <ul>
-                <li v-for="item in attacks">
-                    <!-- {{ item }} -->
-                    <ul>
-                        <li v-for="(value,key) in item" :style="{backgroundColor: color}">
-                            
-                            {{key}} ({{value}})
-                            
-                        </li>
-                    </ul>
+                <li :class="{'player-turn' : attack.turn == 'p', 'monster-turn' : attack.turn == 'm','yesil' : attack.text == 'this.logText.healUp + this.healUpMultiple'}"
+                    v-for="attack in attacks">
+                    {{ attack.text }}
+                   
                 </li>
             </ul>
         </div>

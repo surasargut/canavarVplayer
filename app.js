@@ -1,85 +1,110 @@
 new Vue({
     el : "#app",
     data : {
-        playerHeal: 100,
-        monsterHeal: 100,
+        playerHealth: 100,
+        monsterHealth: 100,
         gameIsOn: false,
-        singleUse: true,
         attacks:[],
-        color: "lightblue"
-        
+        attackMultiple : 10,
+        speacialAttackMultiple : 25,
+        healUpMultiple : 25,
+        logText : {
+            playerAttack : "oyuncu atağı : ",
+            monsterAttack: "canavar atağı : ",
+            speacialPlayerAttack : "özel oyuncu atağı : ",
+            speacialMonsterAttack : "özel canavar atağı : ",
+            healUp : "ilk yardım : ",
+            giveUp : "oyuncu pes etti"
+        }
     },
     methods : {
         startGame : function(){
-            this.playerHeal = 100
-            this.monsterHeal = 100
+            this.playerHealth = 100
+            this.monsterHealth = 100
             this.attacks = []
             this.gameIsOn = !this.gameIsOn
 
         },
         attack : function (){
-            pAttack = Math.ceil(Math.random() * 10)
-            mAttack = Math.ceil(Math.random() * 10)
-            this.playerHeal -= mAttack
-            this.monsterHeal -= pAttack
-            this.attacks.push({player:pAttack, monster:mAttack})
-            
+            pAttack = Math.ceil(Math.random() * this.attackMultiple)
+            mAttack = Math.ceil(Math.random() * this.attackMultiple)
+            this.playerHealth -= mAttack
+            this.monsterHealth -= pAttack
+            this.addToLog({ turn : "p", text : this.logText.playerAttack + pAttack})
+            this.addToLog({ turn : "m", text : this.logText.monsterAttack + mAttack})
         },
         specialAttack : function (){
-            pAttack = Math.ceil(Math.random() * 10)
-            mAttack = Math.ceil(Math.random() * 10)
-            this.playerHeal -= mAttack
-            this.monsterHeal -= pAttack
-            this.attacks.push({player:pAttack,monster:mAttack})
+            pAttack = Math.ceil(Math.random() * this.speacialAttackMultiple)
+            mAttack = Math.ceil(Math.random() * this.speacialAttackMultiple)
+            this.playerHealth -= mAttack
+            this.monsterHealth -= pAttack
+            this.addToLog({ turn : "p", text : this.logText.speacialPlayerAttack + pAttack})
+            this.addToLog({ turn : "m", text : this.logText.speacialMonsterAttack + mAttack})
         },
         healUp : function(){
-            mAttack = Math.ceil(Math.random() * 10)
+            mAttack = Math.ceil(Math.random() * this.attackMultiple)
 
-            if (this.playerHeal > 50){
-                this.playerHeal += 20
-                this.attacks.push({player:20,monster:mAttack})
-            }
-            else{
-                this.playerHeal += 15
-                this.attacks.push({player:15,monster:mAttack})
-            }
+            // if (this.playerHealth > 50){
+                this.playerHealth += this.healUpMultiple
+                this.addToLog({ turn : "p", text : this.logText.healUp + this.healUpMultiple})
+                this.addToLog({ turn : "m", text : this.logText.monsterAttack + mAttack})
+            // }
+            // else{
+            //     this.playerHealth += this.healUpMultiple -5
+            //     this.addToLog({ turn : "p", text : this.logText.healUp + this.healUpMultiple - 5})
+            //     this.addToLog({ turn : "m", text : this.logText.monsterAttack + mAttack})
+            // }
             document.getElementById("heal").disabled = true
-            document.getElementById("heal").style.backgroundColor = "gray";
         },
         giveUp : function(){
-            if (confirm("kaybettin yeniden oynamak ister misin?")) {
-                this.playerHeal = 100
-                this.monsterHeal = 100
-                this.attacks = []
-            }
-            else{
-                this.show = false
-            }
+            this.playerHealth = 0
+            this.addToLog({ turn : "p", text : this.logText.giveUp})
         },
+        addToLog : function (log){
+            this.attacks.push(log)
+        }
 
     },
     watch : {
-        playerHeal : function(value){
+        playerHealth : function(value){
             if (value <= 0) {
-                alert("canavar kazandı")
-             
-            this.playerHeal = 100
-            this.monsterHeal = 100
-            this.attacks = []
-            this.show = !this.show
+                this.playerHealth = 0
+                if (confirm("kaybettin yeniden oynamak ister misin?")) {
+                    this.startGame();
+                    this.gameIsOn = true
+                    document.getElementById("heal").disabled = false
+                }else{
+                    
+                    this.gameIsOn = false
+                }
+            }else if(value >= 100){
+                this.playerHealth = 100
             }
         },
-        monsterHeal : function(value){
+        monsterHealth : function(value){
             if (value <= 0) {
-                alert("sen kazandın")
-                
-            this.playerHeal = 100
-            this.monsterHeal = 100
-            this.attacks = []
-            this.show = !this.show
+                this.monsterHealth = 0
+                if (confirm("kazandın yeniden oynamak ister misin?")) {
+                    this.startGame();
+                    this.gameIsOn = true
+                    document.getElementById("heal").disabled = false
+                }else{
+                    
+                    this.gameIsOn = false
+                }
             }
         }
-
-
+    },
+    computed : {
+        playerProgress : function(){
+            return {
+                width : this.playerHealth + "%"
+            }
+        },
+        monsterProgress : function(){
+            return {
+                width : this.monsterHealth + "%"
+            }
+        }
     }
 })

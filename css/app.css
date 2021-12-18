@@ -39,6 +39,10 @@
     color: blue;
     background-color: #e4e8ff;
 }
+.log ul .player-turn.yesil {
+    color: blue;
+    background-color: green !important;
+}
 
 .log ul .monster-turn {
     color: red;
